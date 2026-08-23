@@ -7,7 +7,6 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-Mode = Literal["enterprise", "indie"]
 CastingStatus = Literal["SOURCING", "SCREENING", "LOCKED"]
 CandidateStatus = Literal["SOURCING", "SCREENING", "LOCKED", "DISQUALIFIED", "FLAGGED_ACTION_REQUIRED"]
 ComplianceStatus = Literal["CLEARED", "AWAITING_QC", "BLOCKED"]
@@ -38,7 +37,7 @@ class Schedule(BaseModel):
 
 class BudgetState(BaseModel):
     daily_burn: float = 0.0
-    cap: float = 0.0
+    cap: float = 250_000.0  # total production budget (USD) from intake — drives casting caps, venues, reach
     alerts: list[str] = Field(default_factory=list)
 
 
@@ -64,7 +63,6 @@ class HumanEscalation(BaseModel):
 
 class GlobalState(BaseModel):
     project_id: str
-    mode: Mode = "indie"
     script_context: dict[str, Any] = Field(default_factory=dict)
     role_requirements: dict[str, Any] = Field(default_factory=dict)
     scoring_weights: dict[str, float] = Field(

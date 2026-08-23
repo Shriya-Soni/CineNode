@@ -18,7 +18,6 @@ const REVEAL_MS = 60; // terminal replay speed per message
 
 export default function App() {
   const [view, setView] = useState("cover");
-  const [mode, setMode] = useState("indie");
   const [tab, setTab] = useState("casting");
   const [state, setState] = useState(null);
   const [events, setEvents] = useState([]);
@@ -44,7 +43,7 @@ export default function App() {
     setRevealed(0);
     clearInterval(timerRef.current);
     try {
-      await api.runPipeline(PROJECT_ID, mode);
+      await api.runPipeline(PROJECT_ID);
       const s = await api.getState(PROJECT_ID);
       setState(s);
       setEvents(s.event_log);
@@ -86,10 +85,11 @@ export default function App() {
         </h1>
         <span style={{ color: "var(--muted)", fontSize: 12 }}>{PROJECT_ID}</span>
         <div className="spacer" />
-        <select value={mode} onChange={(e) => setMode(e.target.value)}>
-          <option value="indie">Indies</option>
-          <option value="enterprise">Big Dawgs</option>
-        </select>
+        {state?.budget_state?.cap > 0 && (
+          <span style={{ color: "var(--muted)", fontSize: 12 }}>
+            Budget ${Math.round(state.budget_state.cap).toLocaleString()}
+          </span>
+        )}
         <button className="primary" onClick={runPipeline} disabled={running}>
           {running ? "Agents working…" : "▶ Run pipeline"}
         </button>
